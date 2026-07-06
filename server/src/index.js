@@ -19,13 +19,22 @@ const PORT = process.env.PORT || 5000;
 
 // Security middleware
 app.use(helmet());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:3000',
+  'https://codechemy.netlify.app',
+  'https://codechemy.onrender.com',
+];
+if (process.env.CLIENT_URL) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+if (process.env.CLIENT_URLS) {
+  allowedOrigins.push(...process.env.CLIENT_URLS.split(',').map((url) => url.trim()).filter(Boolean));
+}
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    'http://localhost:3000'
-  ],
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -55,6 +64,11 @@ app.use('/api/submissions', submissionRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/ai', aiLimiter, aiRoutes);
 app.use('/api/friends', friendRoutes);
+
+// Backend root for deployed host status
+app.get('/', (req, res) => {
+  res.send('Backend is running');
+});
 
 // Health check
 app.get('/api/health', (req, res) => {

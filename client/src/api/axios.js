@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+const defaultApiUrl = import.meta.env.VITE_API_URL || 'https://codechemy.onrender.com/api';
+const localApiUrl = 'http://localhost:5002/api';
+const baseURL = (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname))
+  ? localApiUrl
+  : defaultApiUrl;
+
 const api = axios.create({
-  // Update the fallback port to 5002 right here:
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5002/api',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
